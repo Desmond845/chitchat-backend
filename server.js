@@ -23,7 +23,7 @@ const authLimiter = rateLimit({
 });
   const app = express();
 
-const allowedOrigins = ['http://localhost:3000', 'https://my-app.com'];
+const allowedOrigins = ['http://localhost:3000', 'https://chitchat-chatsite.netlify.app'];
 app.use(cors({
   origin: (origin, cb) => {
     if (!origin || allowedOrigins.includes(origin)) cb(null, true);
@@ -45,8 +45,12 @@ connectDB().then(async () => {
   const httpServer = createServer(app);
   const io = new Server(httpServer, {
     cors: {
-      origin: "http://localhost:3000",
+      origin:[
+        "http://localhost:3000",
+        "https://chitchat-chatsite.netlify.app"
+        ],
       methods: ["GET", "POST"]
+      credentials: true
     }
   });
 const userSockets = {}; // userId -> socketId
