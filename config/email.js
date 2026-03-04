@@ -133,7 +133,7 @@ export const sendOTP = async (email, otp) => {
   `);
 
   return send({
-    from:    FROM,
+    // from:    FROM,
     to:      email,
     subject: 'Your Chit Chat verification code',
     html,
@@ -204,7 +204,7 @@ export const sendWelcome = async (email, username) => {
   `);
 
   return send({
-    from:    FROM,
+    // from:    FROM,
     to:      email,
     subject: `Welcome to Chit Chat, ${username}! 🎉`,
     html,
@@ -259,7 +259,7 @@ export const sendPasswordReset = async (email, otp) => {
   `);
 
   return send({
-    from:    FROM,
+    // from:    FROM,
     to:      email,
     subject: 'Reset your Chit Chat password',
     html,
