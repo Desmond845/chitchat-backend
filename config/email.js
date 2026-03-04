@@ -1,20 +1,8 @@
-// config/email.js
-// Drop-in replacement for all three transporter.sendMail() calls.
-// Usage:
-//   import { sendOTP, sendWelcome, sendPasswordReset } from '../config/email.js';
-//   await sendOTP(email, otp);
-//   await sendWelcome(email, username);
-//   await sendPasswordReset(email, otp);
-//
-// .env required:
-//   RESEND_API_KEY=re_xxxxxxxxxxxx
-//   EMAIL_FROM=Chit Chat <noreply@yourdomain.com>
-//   APP_URL=https://yourdomain.com   (used for the CTA button link)
 
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM   = process.env.EMAIL_FROM || 'Chit Chat <noreply@chitchat.app>';
+const FROM   = process.env.EMAIL_FROM || 'Chit Chat <onboarding@resend.dev>';
 const APP_URL = process.env.APP_URL  || 'http://localhost:3000';
 
 // ── Shared design tokens (inline — email clients strip <style> tags) ──────────
@@ -70,7 +58,7 @@ const wrap = (content) => `
 </html>`;
 
 // ── Header block (reused across all emails) ────────────────────────────────────
-const header = (title, subtitle) => 
+const header = (title, subtitle) => `
   <tr>
     <td style="background:linear-gradient(135deg, ${C.blueDark}, ${C.blueLight}); padding:36px 24px; text-align:center;">
       <div style="width:52px; height:52px; background:rgba(255,255,255,0.15); border-radius:14px;
@@ -79,7 +67,7 @@ const header = (title, subtitle) =>
       <h1 style="margin:0; font-size:24px; font-weight:700; color:${C.white}; letter-spacing:-0.3px;">${title}</h1>
       ${subtitle ? `<p style="margin:8px 0 0; font-size:15px; color:rgba(255,255,255,0.8);">${subtitle}</p>` : ''}
     </td>
-  </tr>;
+  </tr>`;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // 1. OTP / Verification email
@@ -165,14 +153,14 @@ export const sendWelcome = async (email, username) => {
                   ['🔍', 'Discover people', 'Use the Discover tab to find and add friends.'],
                   ['🎨', 'Customize your profile', 'Add a photo and bio so friends can find you.'],
                   ['📢', 'Stay in the loop', 'Check the ChitChat Updates channel for news and tips.'],
-                ].map(([icon, title, desc]) => 
+                ].map(([icon, title, desc]) => `
                   <tr>
                     <td style="padding:6px 0; vertical-align:top; width:28px; font-size:16px;">${icon}</td>
                     <td style="padding:6px 0 6px 8px;">
                       <span style="font-size:14px; font-weight:600; color:${C.text};">${title}</span>
                       <span style="font-size:14px; color:${C.muted};"> — ${desc}</span>
                     </td>
-                  </tr>).join('')}
+                  </tr>`).join('')}
               </table>
             </td>
           </tr>
