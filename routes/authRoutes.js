@@ -23,12 +23,9 @@ const generateUniqueShortId = async () => {
 };
 // GET /api/users/discover?page=1&limit=20&search=...
 router.get('/discover', authenticate, async (req, res) => {
-
-  console.log(`btt`);
   const { page = 1, limit = 20, search = '' } = req.query;
   const skip = (page - 1) * limit;
   const currentUserId = req.userId;
-  console.log(currentUserId);
 try{
 
   const query = {
@@ -60,7 +57,11 @@ router.post('/signup', async (req, res, next) => {
   try {
     const { username, password } = req.body;
     // Check if user exists
-    const existing = await User.findOne({ username });
+    
+    // Check if username already exists
+    const existing = await User.findOne({ 
+      username:{ $regex: `^${username}$`, $options: 'i'}
+     });
     if (existing) return res.status(400).json({ error: 'Username already taken' });
 const id = await generateUniqueShortId()
     const user = new User({ username, password, id });
@@ -210,8 +211,11 @@ router.post('/complete-signup',  [
     if (!decoded.otpVerified) return res.status(400).json({ error: 'Invalid token' });
     const { email } = decoded;
 
+    
     // Check if username already exists
-    const existing = await User.findOne({ username });
+    const existing = await User.findOne({ 
+      username:{ $regex: `^${username}$`, $options: 'i'}
+     });
     if (existing) return res.status(400).json({ error: 'Username taken' });
 
     
