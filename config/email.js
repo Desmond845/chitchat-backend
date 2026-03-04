@@ -7,12 +7,24 @@ const FROM   = process.env.EMAIL_FROM || 'Chit Chat <>';
 const APP_URL = process.env.APP_URL  || 'http://localhost:3000';
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
-  port: 2525,
+  port: 587,
   secure: false, // true for 465
   auth: {
     user: process.env.EMAIL_USER, 
-    pass: process.env.EMAIL_PASS, 
+    pass: process.env.API_KEY, 
   },
+   tls: { rejectUnauthorized: false },
+  connectionTimeout: 30000,
+});
+
+// Verify (add this temporarily to test)
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('MailerSend SMTP verify error:', error);
+  } else {
+    console.log('MailerSend SMTP ready! Emails can send to anyone now 🚀');
+  }
+
 });
 
 const send = ({ to, subject, html, text }) =>
