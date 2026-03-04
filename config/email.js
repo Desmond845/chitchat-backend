@@ -1,10 +1,28 @@
+// config/email.js
 
 import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import nodemailer from 'nodemailer'
+  // const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM   = process.env.EMAIL_FROM || 'Chit Chat <onboarding@resend.dev>';
 const APP_URL = process.env.APP_URL  || 'http://localhost:3000';
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: 465,
+  secure: true, // true for 465
+  auth: {
+    user: process.env.EMAIL_USER, 
+    pass: process.env.EMAIL_PASS, 
+  },
+});
 
+const send = ({ to, subject, html, text }) =>
+  transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to,
+    subject,
+    html,
+    text,
+  });
 // ── Shared design tokens (inline — email clients strip <style> tags) ──────────
 const C = {
   bg:        '#060b18',
@@ -114,7 +132,7 @@ export const sendOTP = async (email, otp) => {
     </tr>
   `);
 
-  return resend.emails.send({
+  return send({
     from:    FROM,
     to:      email,
     subject: 'Your Chit Chat verification code',
@@ -185,7 +203,7 @@ export const sendWelcome = async (email, username) => {
     </tr>
   `);
 
-  return resend.emails.send({
+  return send({
     from:    FROM,
     to:      email,
     subject: `Welcome to Chit Chat, ${username}! 🎉`,
@@ -240,7 +258,7 @@ export const sendPasswordReset = async (email, otp) => {
     </tr>
   `);
 
-  return resend.emails.send({
+  return send({
     from:    FROM,
     to:      email,
     subject: 'Reset your Chit Chat password',
