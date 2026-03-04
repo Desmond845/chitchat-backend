@@ -1,6 +1,8 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import { sendOTP, sendPasswordReset, sendWelcome, } from '../config/email.js';
+
 import { authenticate } from '../middleware/auth.js';
 import Message from '../models/Message.js';
 import transporter from '../config/email.js';
