@@ -5,7 +5,6 @@ import { sendOTP, sendPasswordReset, sendWelcome, } from '../config/email.js';
 
 import { authenticate } from '../middleware/auth.js';
 import Message from '../models/Message.js';
-import transporter from '../config/email.js';
 import Otp from '../models/Otp.js';
 import { body, validationResult } from 'express-validator';
 
