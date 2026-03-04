@@ -7,8 +7,8 @@ const FROM   = process.env.EMAIL_FROM || 'Chit Chat <onboarding@resend.dev>';
 const APP_URL = process.env.APP_URL  || 'http://localhost:3000';
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
-  port: 465,
-  secure: true, // true for 465
+  port: 587,
+  secure: false, // true for 465
   auth: {
     user: process.env.EMAIL_USER, 
     pass: process.env.EMAIL_PASS, 
