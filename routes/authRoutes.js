@@ -99,7 +99,7 @@ router.post('/login', async (req, res, next) => {
   try {
 const { identifier, password } = req.body; // identifier can be email or username
 const user = await User.findOne({
-  $or: [{ username: identifier }, { email: identifier }]
+  $or: [{ username: {$regex: `^${identifier}$`, $options: 'i'} }, { email: identifier.toLowerCase() }]
 });
 
 
