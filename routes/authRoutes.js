@@ -280,7 +280,7 @@ try {
             </ul>
           </div>
 
-          <a href="http://localhost:3000" style="display: block; background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; text-decoration: none; text-align: center; padding: 14px; border-radius: 40px; font-weight: 600; margin: 24px 0;">Start chatting now →</a>
+          <a href="https://chitchat-chatsite.netlify.app" style="display: block; background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; text-decoration: none; text-align: center; padding: 14px; border-radius: 40px; font-weight: 600; margin: 24px 0;">Start chatting now →</a>
 
           <p style="margin: 0; font-size: 14px; color: #64748b; text-align: center;">
             Need help? Reply to this email or contact us at support@chitchat.com.
