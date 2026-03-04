@@ -1,11 +1,10 @@
 {
-  "name": "chat-backend",
+  "name": "chitchat-backend",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "node  --watch  server"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +24,7 @@
     "mongoose": "^9.2.1",
     "multer": "^2.0.2",
     "nodemailer": "^8.0.1",
+    "resend": "^6.9.3",
     "socket.io": "^4.8.3",
     "streamifier": "^0.1.1",
     "uuid": "^13.0.0"
