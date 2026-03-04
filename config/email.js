@@ -7,7 +7,7 @@ const FROM   = process.env.EMAIL_FROM || 'Chit Chat <>';
 const APP_URL = process.env.APP_URL  || 'http://localhost:3000';
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
-  port: 587,
+  port: 2525,
   secure: false, // true for 465
   auth: {
     user: process.env.EMAIL_USER, 
