@@ -49,7 +49,7 @@ connectDB().then(async () => {
         "http://localhost:3000",
         "https://chitchat-chatsite.netlify.app"
         ],
-      methods: ["GET", "POST"],
+      methods: ["GET", "POST", "PATCH", "DELETE"],
       credentials: true
     }
   });
