@@ -141,12 +141,7 @@ console.log(otp);
   await Otp.create({ email, otp, purpose: 'signup' });
 
   try {
-    await transporter.sendMail({ 
-       from: process.env.EMAIL_USER,
-  to: email,
-  subject: 'Your Chit Chat Verification Code',
-  text: `Hey there!\n\nYour verification code is: ${otp}\n\nThis code will expire in 10 minutes. If you didn't request this, please ignore this email.\n\nHappy chatting!\n– The Chit Chat Team`,
- });
+  await sendOTP(email, otp)
     res.json({ message: 'OTP sent' });
   } catch (err) {
     console.error(err);
@@ -186,13 +181,8 @@ router.post('/resend-otp', async (req, res) => {
   await Otp.create({ email, otp, purpose: 'signup' });
 
   try {
-    await transporter.sendMail({ 
-       from: process.env.EMAIL_USER,
-  to: email,
-  subject: 'Your Chit Chat Verification Code',
-  text: `Hey there!\n\nYour verification code is: ${otp}\n\nThis code will expire in 10 minutes. If you didn't request this, please ignore this email.\n\nHappy chatting!\n– The Chit Chat Team`,
+    await sendOTP(email, otp);
 
-     });
     res.json({ message: 'OTP resent' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to send email' });
@@ -251,53 +241,9 @@ setTimeout(async () => {
   console.warn('⚠️ Official user not found – welcome message not sent');
 }
 try {
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: '🎉 Welcome to Chit Chat!',
-    html:` 
-      <div style="font-family: 'Inter', sans-serif; max-width: 480px; margin: 0 auto; background: #0b1120; color: #e2e8f0; border-radius: 24px; overflow: hidden; border: 1px solid #1e293b;">
-        <!-- Header with gradient -->
-        <div style="background: linear-gradient(135deg, #2563eb, #60a5fa); padding: 32px 24px; text-align: center;">
-          <div style="font-size: 48px; margin-bottom: 12px;">💬</div>
-          <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: white;">Welcome to Chit Chat</h1>
-          <p style="margin: 8px 0 0; color: rgba(255,255,255,0.85); font-size: 16px;">Your conversations, now in one place.</p>
-        </div>
+     
+  await sendWelcome(email, username)
 
-        <!-- Body -->
-        <div style="padding: 32px 24px;">
-          <p style="margin: 0 0 20px; font-size: 16px; line-height: 1.6;">Hi <strong style="color: #60a5fa;">${username}</strong>,</p>
-          <p style="margin: 0 0 20px; font-size: 16px; line-height: 1.6;">
-            We're thrilled to have you on board! Chit Chat is built for real, meaningful conversations – whether with friends, family, or new acquaintances.
-          </p>
-
-          <div style="background: #1e293b; border-radius: 16px; padding: 20px; margin: 24px 0;">
-            <h2 style="margin: 0 0 12px; font-size: 18px; color: #94a3b8;">✨ What's next?</h2>
-            <ul style="margin: 0; padding-left: 20px; color: #cbd5e1;">
-              <li style="margin-bottom: 8px;">🔍 <strong>Discover people</strong> – use the “Discover” tab to find friends.</li>
-              <li style="margin-bottom: 8px;">🎨 <strong>Customize your profile</strong> – add a photo and bio.</li>
-              <li style="margin-bottom: 8px;">📢 <strong>Stay updated</strong> – follow the “ChitChat Updates” channel for news.</li>
-            </ul>
-          </div>
-
-          <a href="https://chitchat-chatsite.netlify.app" style="display: block; background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; text-decoration: none; text-align: center; padding: 14px; border-radius: 40px; font-weight: 600; margin: 24px 0;">Start chatting now →</a>
-
-          <p style="margin: 0; font-size: 14px; color: #64748b; text-align: center;">
-            Need help? Reply to this email or contact us at support@chitchat.com.
-          </p>
-        </div>
-
-        <!-- Footer -->
-        <div style="background: #0f172a; padding: 20px; text-align: center; border-top: 1px solid #1e293b;">
-          <p style="margin: 0; font-size: 13px; color: #475569;">
-            © ${new Date().getFullYear()} Chit Chat. All rights reserved.
-          </p>
-        </div>
-      </div>
-    `,
-    // Plain text fallback
-    text: `Welcome to Chit Chat, ${username}!\n\nWe're excited to have you. Start connecting with friends, discover new people, and enjoy real‑time conversations.\n\nIf you have any questions, just reply to this email.\n\n– The Chit Chat Team`,
-  });
   console.log(`📧 Welcome email sent to ${email}`);
 } catch (emailErr) {
 
@@ -326,12 +272,8 @@ console.log(otp);
   await Otp.create({ email, otp, purpose: 'reset' });
 
   try {
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Chit Chat Password Reset',
-      text: `Your password reset code is: ${otp}. It expires in 10 minutes.`,
-    });
+    await sendPasswordReset(email, otp);
+
     res.json({ message: 'Reset code sent' });
   } catch (err) {
     console.error(err);
