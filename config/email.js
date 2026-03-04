@@ -3,7 +3,7 @@
 import { Resend } from 'resend';
 import nodemailer from 'nodemailer'
   // const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM   = process.env.EMAIL_FROM || 'Chit Chat <MS_ZqWawM@test-nrw7gymwe3kg2k8e.mlsender.net>';
+const FROM   = process.env.EMAIL_FROM || 'Chit Chat <>';
 const APP_URL = process.env.APP_URL  || 'http://localhost:3000';
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
