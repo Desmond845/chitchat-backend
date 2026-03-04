@@ -22,7 +22,7 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
   const app = express();
-
+app.set('trust proxy', 1);
 const allowedOrigins = ['http://localhost:3000', 'https://chitchat-chatsite.netlify.app'];
 app.use(cors({
   origin: (origin, cb) => {
