@@ -3,11 +3,11 @@
 import { Resend } from 'resend';
 import nodemailer from 'nodemailer'
   // const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM   = process.env.EMAIL_FROM || 'Chit Chat <onboarding@resend.dev>';
+const FROM   = process.env.EMAIL_FROM || 'Chit Chat <MS_ZqWawM@test-nrw7gymwe3kg2k8e.mlsender.net>';
 const APP_URL = process.env.APP_URL  || 'http://localhost:3000';
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
-  port: 2587,
+  port: 587,
   secure: false, // true for 465
   auth: {
     user: process.env.EMAIL_USER, 
