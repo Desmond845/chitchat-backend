@@ -82,7 +82,8 @@ app.use('/api/admin', adminRoutes(io, userSockets))
       receiverId: msg.receiverId,
       text: msg.text,
       edited: false,
-      replyTo: msg.replyTo || null
+      replyTo: msg.replyTo || null,
+      reactions: msg.reactions || []
     });
     const saved = await messageDoc.save();
 
@@ -112,7 +113,8 @@ app.use('/api/admin', adminRoutes(io, userSockets))
             receiverId: broadcastMsg.receiverId,
             edited: broadcastMsg.edited,
             createdAt: broadcastMsg.createdAt.toISOString(),
-            status: 'sent'
+            status: 'sent',
+            
           });
         }
       }

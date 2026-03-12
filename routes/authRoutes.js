@@ -79,6 +79,7 @@ router.get("/find", authenticate, async (req, res) => {
     const user = await User.findOne({ id }).select(
       "username id _id lastSeen avatar bio createdAt"
     );
+    console.log(user);
     if (!user) return res.status(404).json({ error: "Usr not found" });
     res.json(user);
   } catch (err) {
@@ -204,6 +205,7 @@ router.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log(errors.array()[0].msg);
       return res.status(400).json({ error: errors.array()[0].msg });
     }
 
@@ -256,6 +258,7 @@ router.post(
       try {
         await sendWelcome(email, username);
 
+        console.log(`📧 Welcome email sent to ${email}`);
       } catch (emailErr) {}
       res.json({
         token,
@@ -266,6 +269,7 @@ router.post(
         bio: user.bio,
       });
     } catch (err) {
+      console.log(err);
       res.status(500).json({ error: err.message });
     }
   }
