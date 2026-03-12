@@ -21,7 +21,7 @@ export default function adminRoutes(io, userSockets) {
   };
 
   // ── POST /api/admin/broadcast ──────────────────────────────────────────────
-  // Body: { text: "Your announcement here" }
+  // Body: { text: "My announcement here" }
   // Saves ONE message per user (receiverId = each user), sends real-time to online users.
   router.post(
     "/broadcast",

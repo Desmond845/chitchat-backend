@@ -46,20 +46,20 @@ export const saveMessage = async (msg) => {
 // Seed initial messages if the collection is empty
 export const seedMessages = async () => {
   // await Message.deleteMany({})
-  
- return "butt";
+
+  return "butt";
   const count = await Message.countDocuments();
   if (count === 0) {
-//     const initialMessages = 
-// // In seed script or manually add:
-// {
-//   id: 7, // special ID
-//   username: 'ChitChat Official',
-//   email: 'official@chitchat.com',
-//   password: bcrypt.hashSync('some-secure-password', 10),
-//   bio: 'Official announcements and updates',
-//   avatar: '/official-avatar.png'
-// }
+    //     const initialMessages = 
+    // // In seed script or manually add:
+    // {
+    //   id: 7, // special ID
+    //   username: 'ChitChat Official',
+    //   email: 'official@chitchat.com',
+    //   password: bcrypt.hashSync('some-secure-password', 10),
+    //   bio: 'Official announcements and updates',
+    //   avatar: '/official-avatar.png'
+    // }
     // Flatten the object into an array of messages
     const messagesToInsert = [];
     Object.entries(initialMessages).forEach(([contactId, msgs]) => {
@@ -95,23 +95,22 @@ export const updateMesage = async (req, res) => {
   try {
     const { id } = req.params;
     const { text } = req.body;
-    const  edited  = true;
+    const edited = true;
     // const createdAt = 
-      if(!text.trim().length >= 1) {
-      // console.log(`object`);
+    if (!text.trim().length >= 1) {
       return res.status(404).json({ error: 'Empty Message' });
     }
     const updated = await Message.findByIdAndUpdate(
-      id, 
+      id,
       { text, edited },
       // { edited }, 
       { returnDocument: 'after' } // return the updated document
     );
-    
+
     if (!updated) {
       return res.status(404).json({ error: 'Message not found' });
     }
-        res.json({
+    res.json({
       id: updated._id,
       text: updated.text,
       sender: updated.sender,
@@ -122,7 +121,7 @@ export const updateMesage = async (req, res) => {
       createdAt: updated.createdAt.toISOString()
     });
 
-   } catch (err) {
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
@@ -145,7 +144,9 @@ export const getUserMessages = async (req, res) => {
         receiverId: msg.receiverId,
         edited: msg.edited,
         createdAt: msg.createdAt.toISOString(),
-        status: msg.status
+        status: msg.status,
+        reactions: msg.reactions || [],
+        replyTo: msg.replyTo || null
       });
     });
     res.json(conversations);

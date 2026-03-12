@@ -13,17 +13,18 @@ import adminRoutes from './routes/AdminRoutes.js';
 import Message from './models/Message.js';
 import User from './models/User.js';
 import helmet from 'helmet';
+import { pushRoutes, webpush} from './routes/pushRoutes.js'
 import { error } from 'console';
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, 
+  max: 150, 
   message: { error: 'Too many attempts, please try again after 15 minutes' },
   standardHeaders: true, 
   legacyHeaders: false,
 });
   const app = express();
 app.set('trust proxy', 1);
-const allowedOrigins = ['http://localhost:3000', 'https://chitchat-chatsite.netlify.app'];
+const allowedOrigins = ['http://localhost:3000', 'https://chitchat-chatsite.netlify.app', 'http://10.15.150.4:3000'];
 app.use(cors({
   origin: (origin, cb) => {
     if (!origin || allowedOrigins.includes(origin)) cb(null, true);
@@ -39,6 +40,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/api/messages', messageRoutes);
 
 app.use('/api/users', uploadRoutes);
+app.use('/api/push', pushRoutes)
 // Wait for DB connection, then seed and start server
 connectDB().then(async () => {
 
@@ -47,7 +49,8 @@ connectDB().then(async () => {
     cors: {
       origin:[
         "http://localhost:3000",
-        "https://chitchat-chatsite.netlify.app"
+        "https://chitchat-chatsite.netlify.app",
+        'http://10.15.150.4:3000'
         ],
       methods: ["GET", "POST", "PATCH", "DELETE"],
       credentials: true
@@ -67,7 +70,6 @@ app.use('/api/admin', adminRoutes(io, userSockets))
     socket.userId = userId
     await User.findByIdAndUpdate(userId, {lastSeen: null})
     socket.broadcast.emit('user online', userId)
-    console.log(`User ${userId} registered with socket ${socket.id}`);
   });
 
 
@@ -78,7 +80,8 @@ app.use('/api/admin', adminRoutes(io, userSockets))
       senderId: msg.senderId,
       receiverId: msg.receiverId,
       text: msg.text,
-      edited: false
+      edited: false,
+      replyTo: msg.replyTo || null
     });
     const saved = await messageDoc.save();
 
@@ -123,6 +126,35 @@ app.use('/api/admin', adminRoutes(io, userSockets))
       io.to(receiverSocketId).emit('chat message', saved);
       socket.emit('message delivered', { messageId: saved._id });
     }
+
+
+ else {
+  // User is offline
+  
+  try {
+    const receiver = await User.findById(msg.receiverId);
+    const sender = await User.findById(msg.senderId);
+    
+    ('Receiver subscription:', receiver?.pushSubscription ? 'EXISTS' : 'NULL');
+    
+    if (receiver?.pushSubscription) {
+      await webpush.sendNotification(
+        receiver.pushSubscription,
+        JSON.stringify({
+          title:     sender.username,
+          body:      msg.text.length > 60
+                       ? msg.text.slice(0, 60) + '...'
+                       : msg.text,
+          icon:      sender.avatar || '/icon.jpg',
+          contactId: msg.senderId,
+          url:       process.env.APP_URL || "ChitChat"
+        })
+      );
+    }
+  } catch (err) {
+    console.error('Push failed:', err.message); // ← this will tell us exactly what went wrong
+  }
+}
     socket.emit('message saved', { tempId: msg.tempId, ...saved.toObject() });
 
   } catch (err) {
@@ -195,6 +227,48 @@ socket.on('delete message', (data) => {
   const otherSocket = userSockets[otherId];
   if (otherSocket) {
     io.to(otherSocket).emit('message deleted', data.id);
+  }
+});
+
+
+socket.on('react message', async ({ messageId, emoji, userId, receiverId }) => {
+  try {
+    const message = await Message.findById(messageId);
+    if (!message) return;
+
+    const existing = message.reactions.find(
+      r => r.userId.toString() === userId
+    );
+
+    if (existing) {
+      if (existing.emoji === emoji) {
+        // Same emoji — remove it (toggle off)
+        message.reactions = message.reactions.filter(
+          r => r.userId.toString() !== userId
+        );
+      } else {
+        // Different emoji — change it
+        existing.emoji = emoji;
+      }
+    } else {
+      // No reaction yet — add it
+      message.reactions.push({ emoji, userId });
+    }
+
+    await message.save();
+
+    // Tell both users about the update
+    const updated = {
+      messageId,
+      reactions: message.reactions
+    };
+
+    const receiverSocket = userSockets[receiverId];
+    if (receiverSocket) io.to(receiverSocket).emit('reaction updated', updated);
+    socket.emit('reaction updated', updated);
+
+  } catch (err) {
+    console.error('Reaction error:', err);
   }
 });
     
