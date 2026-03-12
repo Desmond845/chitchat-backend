@@ -70,6 +70,7 @@ app.use('/api/admin', adminRoutes(io, userSockets))
     socket.userId = userId
     await User.findByIdAndUpdate(userId, {lastSeen: null})
     socket.broadcast.emit('user online', userId)
+    console.log(`User ${userId} registered with socket ${socket.id}`);
   });
 
 
@@ -127,15 +128,42 @@ app.use('/api/admin', adminRoutes(io, userSockets))
       socket.emit('message delivered', { messageId: saved._id });
     }
 
+//  else {
+//   // OFFLINE — send push notification
+//   console.log(`offline`);
+//   try {
+//     const receiver = await User.findById(msg.receiverId);
+//     const sender   = await User.findById(msg.senderId);
+    
+//     if (receiver?.pushSubscription) {
+//       await webpush.sendNotification(
+//         receiver.pushSubscription,
+//         JSON.stringify({
+//           title:     sender.username,
+//           body:      msg.text.length > 60 
+//                        ? msg.text.slice(0, 60) + '...' 
+//                        : msg.text,
+//           icon:      sender.avatar || '/icon.jpg',
+//           contactId: msg.senderId,
+//           url:       process.env.APP_URL || "ChitChat"
+//         })
+//       );
+//     }
 
+//  } catch (err) {
+//     console.error('Push failed:', err);
+//     // Don't crash — push failing is not critical
+//   }
+//  }
  else {
   // User is offline
+  console.log('User offline, attempting push for:', msg.receiverId);
   
   try {
     const receiver = await User.findById(msg.receiverId);
     const sender = await User.findById(msg.senderId);
     
-    ('Receiver subscription:', receiver?.pushSubscription ? 'EXISTS' : 'NULL');
+    console.log('Receiver subscription:', receiver?.pushSubscription ? 'EXISTS' : 'NULL');
     
     if (receiver?.pushSubscription) {
       await webpush.sendNotification(
@@ -150,6 +178,7 @@ app.use('/api/admin', adminRoutes(io, userSockets))
           url:       process.env.APP_URL || "ChitChat"
         })
       );
+      console.log('Push sent successfully!');
     }
   } catch (err) {
     console.error('Push failed:', err.message); // ← this will tell us exactly what went wrong
